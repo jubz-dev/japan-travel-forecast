@@ -1,0 +1,86 @@
+version: '3.9'
+
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: laravel-backend
+    volumes:
+      - ./backend:/var/www/html
+    networks:
+      - app-network
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: data_db
+      DB_USERNAME: root
+      DB_PASSWORD: dbPassword
+    depends_on:
+      - mysql
+    command: >
+      sh -c "
+        cp .env.example .env && 
+        composer global require laravel/installer && 
+        composer require guzzlehttp/guzzle && 
+        composer install --no-interaction --prefer-dist --optimize-autoloader && 
+        sleep 10 && 
+        php artisan key:generate && 
+        php artisan migrate --force && 
+        php artisan storage:link && 
+        php-fpm
+      "
+
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: nginx-server
+    ports:
+      - "8001:80"
+    volumes:
+      - ./backend:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - app-network
+    depends_on:
+      - backend
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: vue-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - app-network
+    command: >
+      sh -c "
+        cp .env.example .env && 
+        npm install vue-router@4 axios && 
+        npm i vue-loading-overlay && 
+        npm install leaflet && 
+        npm install vite-plugin-static-copy --save-dev && 
+        npm install && 
+        npm run dev -- --host
+      "
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: dbPassword
+      MYSQL_DATABASE: data_db
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+
+volumes:
+  mysql_data:
+
+networks:
+  app-network:
+    driver: bridge

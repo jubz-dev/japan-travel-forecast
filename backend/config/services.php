@@ -39,4 +39,8 @@ return [
         'api_key' => env('OPENWEATHER_API_KEY'),
     ],
 
+    'geoapify' => [
+        'api_key' => env('GEOAPIFY_API_KEY'),
+    ],
+
 ];

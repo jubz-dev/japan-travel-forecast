@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Cache;
 
 class WeatherService
 {
@@ -25,20 +26,24 @@ class WeatherService
      */
     public function getForecast(string $city): ?array
     {
-        $response = $this->client->request('GET', 'forecast', [
-            'base_uri' => 'https://api.openweathermap.org/data/2.5/',
-            'query' => [
-                'q' => "{$city},JP",
-                'units' => 'metric',
-                'appid' => $this->apiKey,
-            ],
-            'timeout' => 5.0,
-        ]);
+        $cacheKey = 'weather_forecast_' . strtolower($city);
 
-        if ($response->getStatusCode() !== 200) {
-            return null;
-        }
+        return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($city) {
+            $response = $this->client->request('GET', 'forecast', [
+                'base_uri' => 'https://api.openweathermap.org/data/2.5/',
+                'query' => [
+                    'q' => "{$city},JP",
+                    'units' => 'metric',
+                    'appid' => $this->apiKey,
+                ],
+                'timeout' => 5.0,
+            ]);
 
-        return json_decode($response->getBody()->getContents(), true);
+            if ($response->getStatusCode() !== 200) {
+                return null;
+            }
+
+            return json_decode($response->getBody()->getContents(), true);
+        });
     }
 }

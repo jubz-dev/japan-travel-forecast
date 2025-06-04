@@ -32,7 +32,7 @@ class TileController extends Controller
     }
 
     /**
-     * Retrieve a map tile image.
+     * Retrieve and cache a map tile image.
      *
      * @param int $z Zoom level.
      * @param int $x X tile coordinate.
@@ -45,7 +45,8 @@ class TileController extends Controller
 
         if ($tile) {
             return response($tile, 200)
-                ->header('Content-Type', 'image/png');
+                ->header('Content-Type', 'image/png')
+                ->header('Cache-Control', 'max-age=31536000, public');
         }
 
         return response('Tile not available', 404);

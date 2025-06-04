@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Cache;
 
 class GeoapifyService
 {
@@ -18,20 +19,24 @@ class GeoapifyService
     }
 
     /**
-     * Fetch places near a city.
+     * Fetch places near a city and cache the result.
      *
      * @param string $city
      * @return array|null
      */
     public function getPlacesNearCity(string $city): ?array
     {
-        $coordinates = $this->getCityCoordinates($city);
+        $cacheKey = 'places_' . strtolower($city);
 
-        if (!$coordinates) {
-            return null;
-        }
+        return Cache::remember($cacheKey, 3600, function () use ($city) {
+            $coordinates = $this->getCityCoordinates($city);
 
-        return $this->getNearbyPlaces($coordinates['lon'], $coordinates['lat']);
+            if (!$coordinates) {
+                return null;
+            }
+
+            return $this->getNearbyPlaces($coordinates['lon'], $coordinates['lat']);
+        });
     }
 
     private function getCityCoordinates(string $city): ?array

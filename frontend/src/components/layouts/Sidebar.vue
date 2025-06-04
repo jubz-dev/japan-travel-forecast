@@ -327,10 +327,16 @@ aside {
  * - Sidebar and main content arranged side by side.
  */
 @media (min-width: 992px) {
+
+  /* Place section styling */
+  .places-section {
+    padding: 0 1rem 0 1rem;
+  }
   /* List of places cards */
   .places-list {
     gap: 0.5rem;
   }
+
   /* Place title styling */
   .place-title {
     margin: 0 0 0.20rem;

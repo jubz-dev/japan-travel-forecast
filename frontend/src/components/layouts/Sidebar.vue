@@ -55,6 +55,28 @@
           </div>
         </article>
       </div>
+
+      <!-- View Map button and modal -->
+      <div class="view-map-button">
+        <button class="btn-view-map" @click="showMapModal = true">
+          <!-- view-map-icon --> View Map
+        </button>
+      </div>
+
+      <!-- Map modal for displaying places -->
+      <div
+        v-if="showMapModal"
+        class="modal-overlay"
+        @click.self="showMapModal = false"
+      >
+        <div class="modal-content glassy-card-map">
+          <header class="modal-header">
+            <h5>Places Map</h5>
+            <button class="close-button" @click="showMapModal = false">×</button>
+          </header>
+          <PlacesMap :places="places" />
+        </div>
+      </div>
     </section>
 
     <!-- No places found message -->
@@ -71,11 +93,12 @@
 /**
  * Sidebar.vue
  * - Sidebar component to display top related places for a city.
- * - Handles loading/error states.
+ * - Includes map modal view and handles loading/error states.
  */
 
 import { defineProps, ref, watchEffect } from 'vue'
 import Spinner from './Spinner.vue'
+import PlacesMap from '../partials/PlacesMap.vue'
 
 /**
  * Props
@@ -99,6 +122,12 @@ const loading = ref(true)
  * @type {import('vue').Ref<string>}
  */
 const error = ref('')
+
+/**
+ * Toggle for the map modal view
+ * @type {import('vue').Ref<boolean>}
+ */
+const showMapModal = ref(false)
 
 /**
  * Watch for changes in places data and update loading/error states.
@@ -212,6 +241,87 @@ aside {
   font-size: 0.75rem;
 }
 
+/* View map button styling */
+.view-map-button {
+  text-align: center;
+  margin-top: 1rem;
+  margin-bottom: 5rem;
+}
+
+.btn-view-map {
+  background-color: #e50914;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+.btn-view-map:hover {
+  background-color: #c20811;
+  transform: scale(1.05);
+}
+
+/* Modal overlay for map */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Glassy modal content card */
+.glassy-card-map {
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 1rem;
+  width: 90%;
+  max-width: 800px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  color: #231a15;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Modal header styling */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  color: white;
+}
+
+.modal-header h5 {
+  margin: 0;
+  font-weight: 600;
+  color: white;
+}
+
+/* Close button in modal header */
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: white;
+  transition: transform 0.2s ease;
+}
+.close-button:hover {
+  transform: scale(1.1);
+}
+
 /**
  * Large screens (≥992px) layout adjustments.
  * - Sidebar and main content arranged side by side.
@@ -231,6 +341,11 @@ aside {
   .place-location {
     margin: 0 0 0.20rem;
     font-size: 0.7rem;
+  }
+
+  /* View map button styling */
+  .view-map-button {
+    margin-bottom: 0;
   }
 }
 </style>

@@ -1,0 +1,128 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Bizmates Exam API",
+        "description": "This is the API documentation for the Bizmates Exam project.",
+        "contact": {
+            "name": "Bizmates Dev Team",
+            "email": "support@bizmates.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://my-default-host.com",
+            "description": "Main API server"
+        }
+    ],
+    "paths": {
+        "/api/places/{city}": {
+            "get": {
+                "tags": [
+                    "Places"
+                ],
+                "summary": "Get places near a given city",
+                "operationId": "e5bb8b87e0c69e0c823429645e54884a",
+                "parameters": [
+                    {
+                        "name": "city",
+                        "in": "path",
+                        "description": "City name in Japan",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of places",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "City not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/weather/{city}": {
+            "get": {
+                "tags": [
+                    "Weather"
+                ],
+                "summary": "Get weather forecast for a city",
+                "operationId": "14c3afec3c1443ca94915238c6b14242",
+                "parameters": [
+                    {
+                        "name": "city",
+                        "in": "path",
+                        "description": "City name in Japan",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Forecast data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Unable to fetch weather data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Places",
+            "description": "Retrieve nearby places data."
+        },
+        {
+            "name": "Weather",
+            "description": "Weather"
+        }
+    ]
+}

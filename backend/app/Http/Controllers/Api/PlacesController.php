@@ -5,9 +5,16 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use OpenApi\Annotations as OA;
 use App\Services\GeoapifyService;
 use Illuminate\Http\JsonResponse;
 
+/**
+ * @OA\Tag(
+ *     name="Places",
+ *     description="Retrieve nearby places data."
+ * )
+ */
 class PlacesController extends Controller
 {
     private GeoapifyService $geoapifyService;
@@ -18,10 +25,33 @@ class PlacesController extends Controller
     }
 
     /**
-     * Retrieve a list of places near a given city in Japan.
-     *
-     * @param string $city The name of the city to search for.
-     * @return JsonResponse A JSON response with places data or an error if the city is not found.
+     * @OA\Get(
+     *     path="/api/places/{city}",
+     *     tags={"Places"},
+     *     summary="Get places near a given city",
+     *     @OA\Parameter(
+     *         name="city",
+     *         in="path",
+     *         required=true,
+     *         description="City name in Japan",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of places",
+     *         @OA\JsonContent(
+     *             type="object"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="City not found",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     )
+     * )
      */
     public function getPlaces(string $city): JsonResponse
     {
